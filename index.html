@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technical Treasure Hunt :: Educational Tracing Engine</title>
+  
+  <!-- Inline SVG Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='4' width='16' height='16' rx='2'/><rect x='9' y='9' width='6' height='6'/><line x1='9' y1='1' x2='9' y2='4'/><line x1='15' y1='1' x2='15' y2='4'/><line x1='9' y1='20' x2='9' y2='23'/><line x1='15' y1='20' x2='15' y2='23'/><line x1='20' y1='9' x2='23' y2='9'/><line x1='20' y1='15' x2='23' y2='15'/><line x1='1' y1='9' x2='4' y2='9'/><line x1='1' y1='15' x2='4' y2='15'/></svg>">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+    code, pre {
+      font-family: 'JetBrains Mono', monospace;
+    }
+    dialog::backdrop {
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(2px);
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between bg-slate-900 text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- TOP HEADER -->
+  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-40">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center font-mono font-bold text-white text-sm">
+          TH
+        </div>
+        <div>
+          <h1 class="text-sm font-semibold tracking-wide text-slate-100 uppercase">Technical Treasure Hunt</h1>
+          <p class="text-xs text-slate-400">Code Tracing & Logic Evaluation Platform</p>
+        </div>
+      </div>
+
+      <div class="flex items-center space-x-6 text-xs">
+        <div class="hidden sm:flex items-center space-x-2 text-slate-400">
+          <span>Curriculum:</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono">10 Python</span>
+          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono">5 SQL</span>
+        </div>
+        <div class="flex items-center space-x-2">
+          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span class="text-slate-300 font-mono" id="header-status">Active Session</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+
+      <!-- LEFT COLUMN: QUESTION CONTENT & SUBMISSION AREA (8 COLS) -->
+      <section class="lg:col-span-8 space-y-6">
+        
+        <!-- ACTIVE PUZZLE CARD -->
+        <div id="puzzle-card" class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-6 space-y-6">
+          
+          <!-- PUZZLE HEADER METADATA -->
+          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-700/60">
+            <div>
+              <div class="flex items-center space-x-2">
+                <span id="puzzle-category" class="px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-blue-950 text-blue-300 border border-blue-800">PYTHON</span>
+                <span id="puzzle-type" class="text-xs text-slate-400 font-mono">Data Structures</span>
+              </div>
+              <h2 id="puzzle-title" class="text-xl font-bold text-slate-100 mt-1">Level 01: Stack Vault</h2>
+            </div>
+
+            <div class="text-right">
+              <span class="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Progress</span>
+              <span id="puzzle-progress-text" class="text-sm font-mono text-slate-200 font-semibold">Question 1 of 15</span>
+            </div>
+          </div>
+
+          <!-- INSTRUCTION PROMPT -->
+          <div class="space-y-2">
+            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Instructions</h3>
+            <p id="puzzle-instruction" class="text-sm text-slate-300 leading-relaxed">
+              Trace the execution of the Python program below. Evaluate all list manipulations, conditionals, and loop iterations to determine the final exact string printed.
+            </p>
+          </div>
+
+          <!-- CODE DISPLAY BOX -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center text-xs text-slate-400 font-mono px-1">
+              <span>Source Payload</span>
+              <span>UTF-8 Plaintext</span>
+            </div>
+            <div class="relative rounded-md bg-slate-950 border border-slate-800 p-4 overflow-x-auto">
+              <pre><code id="puzzle-code" class="text-sm text-slate-200 leading-relaxed">loading...</code></pre>
+            </div>
+          </div>
+
+          <!-- SUBMISSION & FEEDBACK FORM -->
+          <form id="answer-form" class="space-y-4 pt-2" onsubmit="handleAnswerSubmit(event)">
+            <div class="space-y-2">
+              <label for="answer-input" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                Enter Decoded Password / Query Result
+              </label>
+              <div class="flex flex-col sm:flex-row gap-3">
+                <input 
+                  type="text" 
+                  id="answer-input" 
+                  name="answer" 
+                  autocomplete="off" 
+                  spellcheck="false" 
+                  placeholder="e.g. STACK"
+                  class="flex-grow bg-slate-900 border border-slate-700 rounded-md px-4 py-2.5 text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all uppercase"
+                  required
+                >
+                <button 
+                  type="submit" 
+                  class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-md text-sm transition-colors flex items-center justify-center space-x-2 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-400"
+                >
+                  <span>Submit Solution</span>
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                </button>
+              </div>
+              <p class="text-xs text-slate-400">Passwords are case-insensitive and stripped of whitespace.</p>
+            </div>
+
+            <!-- FEEDBACK MESSAGES -->
+            <div id="feedback-error" class="hidden p-3 rounded-md bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-start space-x-2">
+              <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span id="feedback-error-text">Incorrect solution. Re-trace your variable state table and try again.</span>
+            </div>
+
+            <div id="feedback-success" class="hidden p-3 rounded-md bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-start space-x-2">
+              <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+              <span>ACCESS GRANTED. Correct solution verified. Unlocking next level...</span>
+            </div>
+          </form>
+
+        </div>
+
+        <!-- FINAL COMPLETION STATE (HIDDEN UNTIL ALL 15 SOLVED) -->
+        <div id="completion-card" class="hidden bg-slate-800/60 border border-emerald-700/80 rounded-lg p-8 space-y-6 text-center">
+          <div class="h-12 w-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/40">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div>
+            <h2 class="text-2xl font-bold text-slate-100">Treasure Hunt Complete!</h2>
+            <p class="text-sm text-slate-300 mt-2 max-w-lg mx-auto">
+              All 15 technical code tracing puzzles have been successfully solved and verified. Excellent evaluation work.
+            </p>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4 max-w-md mx-auto pt-2">
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded-md">
+              <span class="text-xs text-slate-400 uppercase tracking-wider block">Total Elapsed Time</span>
+              <span id="final-total-time" class="text-2xl font-mono font-bold text-blue-400">00:00</span>
+            </div>
+            <div class="bg-slate-900 border border-slate-700 p-4 rounded-md">
+              <span class="text-xs text-slate-400 uppercase tracking-wider block">Puzzles Solved</span>
+              <span class="text-2xl font-mono font-bold text-emerald-400">15 / 15</span>
+            </div>
+          </div>
+
+          <div class="pt-4">
+            <button 
+              onclick="resetHunt()" 
+              class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium px-6 py-2.5 rounded-md text-sm transition-colors border border-slate-600"
+            >
+              Reset Hunt Engine
+            </button>
+          </div>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN: SIDEBAR TIMER & PROGRESS METRICS (4 COLS) -->
+      <aside class="lg:col-span-4 space-y-6">
+        
+        <!-- REAL-TIME TIMER CARD -->
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-5 space-y-4">
+          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+            <span>Session Timers</span>
+            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
+          </h3>
+
+          <div class="space-y-3">
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-md flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 block">Current Question</span>
+                <span id="active-question-timer" class="text-xl font-mono font-bold text-slate-100">00:00</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-500 block">Active Level</span>
+                <span id="timer-active-level-tag" class="text-xs font-mono text-blue-400">Q01</span>
+              </div>
+            </div>
+
+            <div class="bg-slate-900 border border-slate-800 p-3 rounded-md flex items-center justify-between">
+              <div>
+                <span class="text-xs text-slate-400 block">Total Elapsed Time</span>
+                <span id="total-session-timer" class="text-xl font-mono font-bold text-slate-300">00:00</span>
+              </div>
+              <div class="text-right">
+                <span class="text-xs text-slate-500 block">Clock State</span>
+                <span class="text-xs font-mono text-emerald-400">RUNNING</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- LEVEL PROGRESS METRICS CARD -->
+        <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-5 space-y-4">
+          <div class="flex items-center justify-between">
+            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Level Status</h3>
+            <span id="completion-percentage" class="text-xs font-mono text-slate-300 font-semibold">0% Completed</span>
+          </div>
+
+          <!-- PROGRESS BAR -->
+          <div class="w-full bg-slate-900 rounded-full h-2 border border-slate-800 overflow-hidden">
+            <div id="progress-bar-fill" class="bg-blue-600 h-full transition-all duration-300 w-0"></div>
+          </div>
+
+          <!-- LOCKED QUESTION LIST OVERVIEW -->
+          <div class="space-y-1.5 pt-2 max-h-[360px] overflow-y-auto pr-1 text-xs font-mono" id="question-list-tracker">
+            <!-- Dynamically populated via JavaScript -->
+          </div>
+        </div>
+
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="border-t border-slate-800 bg-slate-950 py-6 text-xs text-slate-400">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="flex items-center space-x-2">
+        <span>Technical Treasure Hunt Engine</span>
+        <span>&bull;</span>
+        <span>Computer Science Evaluation Platform</span>
+      </div>
+      <div class="flex items-center space-x-6">
+        <button onclick="openModal('terms-dialog')" class="hover:text-slate-200 transition-colors underline">Terms of Service</button>
+        <button onclick="openModal('privacy-dialog')" class="hover:text-slate-200 transition-colors underline">Privacy Policy</button>
+      </div>
+    </div>
+  </footer>
+
+  <!-- TERMS OF SERVICE MODAL -->
+  <dialog id="terms-dialog" class="rounded-lg bg-slate-900 border border-slate-700 text-slate-200 p-6 max-w-xl w-full">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-slate-100">Terms of Service</h3>
+        <button onclick="closeModal('terms-dialog')" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div class="text-xs leading-relaxed space-y-3 text-slate-300 max-h-80 overflow-y-auto pr-2">
+        <p>This technical tracing platform is provided strictly for educational assessment and computer science instruction.</p>
+        <p>Users must submit solutions derived strictly through personal manual tracing, calculation, or execution analysis without automated bypass techniques.</p>
+        <p>All curriculum material, including Python code samples and SQL schemas, is formatted for classroom evaluation.</p>
+      </div>
+      <div class="pt-2 text-right">
+        <button onclick="closeModal('terms-dialog')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- PRIVACY POLICY MODAL -->
+  <dialog id="privacy-dialog" class="rounded-lg bg-slate-900 border border-slate-700 text-slate-200 p-6 max-w-xl w-full">
+    <div class="space-y-4">
+      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+        <h3 class="text-base font-bold text-slate-100">Privacy Policy</h3>
+        <button onclick="closeModal('privacy-dialog')" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div class="text-xs leading-relaxed space-y-3 text-slate-300 max-h-80 overflow-y-auto pr-2">
+        <p>This application operates completely on the client side inside your web browser.</p>
+        <p>No solution inputs, elapsed split times, or progress data are transmitted to external servers or remote endpoints.</p>
+        <p>Local session state remains contained entirely in active browser memory during execution.</p>
+      </div>
+      <div class="pt-2 text-right">
+        <button onclick="closeModal('privacy-dialog')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs">Close</button>
+      </div>
+    </div>
+  </dialog>
+
+  <!-- JAVASCRIPT ENGINE & PUZZLE PAYLOAD -->
+  <script>
+    // COMPLETE 15 PUZZLE PAYLOAD
+    const PUZZLES = [
+      {
+        id: 1,
+        title: "Level 01: Stack Vault",
+        category: "PYTHON",
+        type: "Data Structures - Stack (LIFO)",
+        instruction: "Trace the execution of the Python program. What string is printed at the end?",
+        code: `vault = ["K", "X", "C", "A", "Q", "T", "S", "Z"]
+trash = {"X", "Q", "Z"}
+stack = []
+
+for i, ch in enumerate(vault):
+    if ch not in trash and i % 2 == 0:
+        stack.append(ch)
+    elif ch not in trash and i % 2 != 0:
+        stack.append(ch.lower())
+
+out = ""
+while stack:
+    out += stack.pop().upper()
+
+print(out)`,
+        password: "STACK"
+      },
+      {
+        id: 2,
+        title: "Level 02: Queue Processor",
+        category: "PYTHON",
+        type: "Data Structures - Queue (FIFO)",
+        instruction: "Trace the queue operations. What password is produced when the queue is emptied?",
+        code: `data = ["Q", "X", "U", "E", "U", "Z", "E"]
+noise = ("X", "Z")
+queue = []
+
+for ch in data:
+    if ch not in noise:
+        queue.append(ch)
+
+password = ""
+while queue:
+    password += queue.pop(0)
+
+print(password)`,
+        password: "QUEUE"
+      },
+      {
+        id: 3,
+        title: "Level 03: Loop & Sorting",
+        category: "PYTHON",
+        type: "Control Flow & Tuple Sorting",
+        instruction: "Trace the loop filtering and ASCII character decoding.",
+        code: `data = [
+    (4, 80, True),
+    (1, 76, True),
+    (99, 88, False),
+    (3, 79, True),
+    (2, 79, True),
+    (0, 0, False)
+]
+
+signal = []
+for position, value, valid in data:
+    if not valid:
+        continue
+    if position > 0:
+        signal.append((position, value))
+
+signal.sort()
+
+password = ""
+for position, value in signal:
+    password += chr(value)
+
+print(password)`,
+        password: "LOOP"
+      },
+      {
+        id: 4,
+        title: "Level 04: List Manipulation",
+        category: "PYTHON",
+        type: "List Indexing & Slicing",
+        instruction: "Carefully track list mutation as items are popped by index.",
+        code: `letters = list("LQIXSXT")
+
+letters.pop(1)
+letters.pop(2)
+letters.pop(3)
+
+ghost = letters[::-1]
+letters = ghost[::-1]
+
+print("".join(letters))`,
+        password: "LIST"
+      },
+      {
+        id: 5,
+        title: "Level 05: Tuple & Ranking",
+        category: "PYTHON",
+        type: "Tuple Unpacking & Prepending",
+        instruction: "Trace the tuple sorting by rank and string prepending behavior.",
+        code: `records = (
+    ("E", 5, True),
+    ("P", 3, True),
+    ("X", 99, False),
+    ("T", 1, True),
+    ("L", 4, True),
+    ("U", 2, True),
+    ("Q", 0, False)
+)
+
+valid = []
+for letter, rank, status in records:
+    if status and rank > 0:
+        valid.append((rank, letter))
+
+valid.sort(key=lambda item: item[0], reverse=True)
+
+password = ""
+for rank, letter in valid:
+    password = letter + password
+
+print(password)`,
+        password: "TUPLE"
+      },
+      {
+        id: 6,
+        title: "Level 06: Dictionary Lookup",
+        category: "PYTHON",
+        type: "Dictionary Keys & Sets",
+        instruction: "Determine the output by evaluating sorted dictionary key access.",
+        code: `box = {
+    9: "X",
+    2: "I",
+    5: "Q",
+    1: "D",
+    4: "T",
+    3: "C",
+    8: "Z"
+}
+
+noise = {5, 8, 9}
+result = ""
+
+for key in sorted(box):
+    if key in noise:
+        continue
+    if key % 2 == 0:
+        result += box[key]
+    else:
+        result += box[key]
+
+print(result)`,
+        password: "DICT"
+      },
+      {
+        id: 7,
+        title: "Level 07: Index & Duplicate",
+        category: "PYTHON",
+        type: "String Indexing & Sets",
+        instruction: "Trace the order vector, duplicate index set filtering, and bounds checking.",
+        code: `cipher = "ANEBIXD"
+order = [4, 1, 6, 2, 5, 1, 99]
+
+answer = []
+seen = set()
+
+for step in order:
+    if step >= len(cipher):
+        continue
+    if step in seen:
+        continue
+    seen.add(step)
+    answer.append(cipher[step])
+
+print("".join(answer))`,
+        password: 
