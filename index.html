@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+        <!DOCTYPE html>
 <html lang="en" class="h-full bg-slate-900 text-slate-100">
 <head>
   <meta charset="UTF-8">
@@ -95,7 +96,7 @@
               <span>UTF-8 Plaintext</span>
             </div>
             <div class="relative rounded-md bg-slate-950 border border-slate-800 p-4 overflow-x-auto">
-              <pre><code id="puzzle-code" class="text-sm text-slate-200 leading-relaxed">loading...</code></pre>
+              <pre><code id="puzzle-code" class="text-sm text-slate-200 leading-relaxed">Initializing puzzle...</code></pre>
             </div>
           </div>
 
@@ -295,21 +296,7 @@
         category: "PYTHON",
         type: "Data Structures - Stack (LIFO)",
         instruction: "Trace the execution of the Python program. What string is printed at the end?",
-        code: `vault = ["K", "X", "C", "A", "Q", "T", "S", "Z"]
-trash = {"X", "Q", "Z"}
-stack = []
-
-for i, ch in enumerate(vault):
-    if ch not in trash and i % 2 == 0:
-        stack.append(ch)
-    elif ch not in trash and i % 2 != 0:
-        stack.append(ch.lower())
-
-out = ""
-while stack:
-    out += stack.pop().upper()
-
-print(out)`,
+        code: "vault = [\"K\", \"X\", \"C\", \"A\", \"Q\", \"T\", \"S\", \"Z\"]\ntrash = {\"X\", \"Q\", \"Z\"}\nstack = []\n\nfor i, ch in enumerate(vault):\n    if ch not in trash and i % 2 == 0:\n        stack.append(ch)\n    elif ch not in trash and i % 2 != 0:\n        stack.append(ch.lower())\n\nout = \"\"\nwhile stack:\n    out += stack.pop().upper()\n\nprint(out)",
         password: "STACK"
       },
       {
@@ -318,19 +305,7 @@ print(out)`,
         category: "PYTHON",
         type: "Data Structures - Queue (FIFO)",
         instruction: "Trace the queue operations. What password is produced when the queue is emptied?",
-        code: `data = ["Q", "X", "U", "E", "U", "Z", "E"]
-noise = ("X", "Z")
-queue = []
-
-for ch in data:
-    if ch not in noise:
-        queue.append(ch)
-
-password = ""
-while queue:
-    password += queue.pop(0)
-
-print(password)`,
+        code: "data = [\"Q\", \"X\", \"U\", \"E\", \"U\", \"Z\", \"E\"]\nnoise = (\"X\", \"Z\")\nqueue = []\n\nfor ch in data:\n    if ch not in noise:\n        queue.append(ch)\n\npassword = \"\"\nwhile queue:\n    password += queue.pop(0)\n\nprint(password)",
         password: "QUEUE"
       },
       {
@@ -339,29 +314,7 @@ print(password)`,
         category: "PYTHON",
         type: "Control Flow & Tuple Sorting",
         instruction: "Trace the loop filtering and ASCII character decoding.",
-        code: `data = [
-    (4, 80, True),
-    (1, 76, True),
-    (99, 88, False),
-    (3, 79, True),
-    (2, 79, True),
-    (0, 0, False)
-]
-
-signal = []
-for position, value, valid in data:
-    if not valid:
-        continue
-    if position > 0:
-        signal.append((position, value))
-
-signal.sort()
-
-password = ""
-for position, value in signal:
-    password += chr(value)
-
-print(password)`,
+        code: "data = [\n    (4, 80, True),\n    (1, 76, True),\n    (99, 88, False),\n    (3, 79, True),\n    (2, 79, True),\n    (0, 0, False)\n]\n\nsignal = []\nfor position, value, valid in data:\n    if not valid:\n        continue\n    if position > 0:\n        signal.append((position, value))\n\nsignal.sort()\n\npassword = \"\"\nfor position, value in signal:\n    password += chr(value)\n\nprint(password)",
         password: "LOOP"
       },
       {
@@ -370,16 +323,7 @@ print(password)`,
         category: "PYTHON",
         type: "List Indexing & Slicing",
         instruction: "Carefully track list mutation as items are popped by index.",
-        code: `letters = list("LQIXSXT")
-
-letters.pop(1)
-letters.pop(2)
-letters.pop(3)
-
-ghost = letters[::-1]
-letters = ghost[::-1]
-
-print("".join(letters))`,
+        code: "letters = list(\"LQIXSXT\")\n\nletters.pop(1)\nletters.pop(2)\nletters.pop(3)\n\nghost = letters[::-1]\nletters = ghost[::-1]\n\nprint(\"\".join(letters))",
         password: "LIST"
       },
       {
@@ -388,28 +332,7 @@ print("".join(letters))`,
         category: "PYTHON",
         type: "Tuple Unpacking & Prepending",
         instruction: "Trace the tuple sorting by rank and string prepending behavior.",
-        code: `records = (
-    ("E", 5, True),
-    ("P", 3, True),
-    ("X", 99, False),
-    ("T", 1, True),
-    ("L", 4, True),
-    ("U", 2, True),
-    ("Q", 0, False)
-)
-
-valid = []
-for letter, rank, status in records:
-    if status and rank > 0:
-        valid.append((rank, letter))
-
-valid.sort(key=lambda item: item[0], reverse=True)
-
-password = ""
-for rank, letter in valid:
-    password = letter + password
-
-print(password)`,
+        code: "records = (\n    (\"E\", 5, True),\n    (\"P\", 3, True),\n    (\"X\", 99, False),\n    (\"T\", 1, True),\n    (\"L\", 4, True),\n    (\"U\", 2, True),\n    (\"Q\", 0, False)\n)\n\nvalid = []\nfor letter, rank, status in records:\n    if status and rank > 0:\n        valid.append((rank, letter))\n\nvalid.sort(key=lambda item: item[0], reverse=True)\n\npassword = \"\"\nfor rank, letter in valid:\n    password = letter + password\n\nprint(password)",
         password: "TUPLE"
       },
       {
@@ -418,28 +341,7 @@ print(password)`,
         category: "PYTHON",
         type: "Dictionary Keys & Sets",
         instruction: "Determine the output by evaluating sorted dictionary key access.",
-        code: `box = {
-    9: "X",
-    2: "I",
-    5: "Q",
-    1: "D",
-    4: "T",
-    3: "C",
-    8: "Z"
-}
-
-noise = {5, 8, 9}
-result = ""
-
-for key in sorted(box):
-    if key in noise:
-        continue
-    if key % 2 == 0:
-        result += box[key]
-    else:
-        result += box[key]
-
-print(result)`,
+        code: "box = {\n    9: \"X\",\n    2: \"I\",\n    5: \"Q\",\n    1: \"D\",\n    4: \"T\",\n    3: \"C\",\n    8: \"Z\"\n}\n\nnoise = {5, 8, 9}\nresult = \"\"\n\nfor key in sorted(box):\n    if key in noise:\n        continue\n    if key % 2 == 0:\n        result += box[key]\n    else:\n        result += box[key]\n\nprint(result)",
         password: "DICT"
       },
       {
@@ -448,19 +350,276 @@ print(result)`,
         category: "PYTHON",
         type: "String Indexing & Sets",
         instruction: "Trace the order vector, duplicate index set filtering, and bounds checking.",
-        code: `cipher = "ANEBIXD"
-order = [4, 1, 6, 2, 5, 1, 99]
+        code: "cipher = \"ANEBIXD\"\norder = [4, 1, 6, 2, 5, 1, 99]\n\nanswer = []\nseen = set()\n\nfor step in order:\n    if step >= len(cipher):\n        continue\n    if step in seen:\n        continue\n    seen.add(step)\n    answer.append(cipher[step])\n\nprint(\"\".join(answer))",
+        password: "INDEX"
+      },
+      {
+        id: 8,
+        title: "Level 08: ASCII & Reverse",
+        category: "PYTHON",
+        type: "Slice Reversal & ASCII Boundaries",
+        instruction: "Evaluate reversed iteration and ASCII value boundary conditions.",
+        code: "data = [71, 12, 85, 0, 66, 34, 69, 68]\nblocked = {0, 12, 34}\npieces = []\n\nfor number in data[::-1]:\n    if number in blocked:\n        continue\n    if number < 65 or number > 90:\n        continue\n    pieces.append(chr(number))\n\nprint(\"\".join(pieces))",
+        password: "DEBUG"
+      },
+      {
+        id: 9,
+        title: "Level 09: Arithmetic Decoding",
+        category: "PYTHON",
+        type: "Enumerate & Character Transformation",
+        instruction: "Filter by even indexes and increment ASCII character codes.",
+        code: "data = [82, 11, 68, 64, 64, 4, 81, 66, 66, 68, 71]\npassword = \"\"\n\nfor i, number in enumerate(data):\n    if i % 2 == 0:\n        password += chr(number + 1)\n\nprint(password)",
+        password: "SEARCH"
+      },
+      {
+        id: 10,
+        title: "Level 10: Master Archive",
+        category: "PYTHON",
+        type: "Complex Comprehension & Sorting",
+        instruction: "Perform status filtering, lambda key sorting, and string joining.",
+        code: "records = [\n    (4, \"A\", 1), (1, \"T\", 1), (6, \"U\", 1),\n    (2, \"R\", 1), (5, \"S\", 1), (3, \"E\", 1),\n    (7, \"R\", 1), (8, \"E\", 1), (9, \"X\", 0),\n    (10, \"Q\", 0), (2, \"Z\", 0)\n]\n\narchive = []\nfor position, letter, status in records:\n    if status == 1:\n        archive.append((position, letter))\n\narchive.sort(key=lambda item: item[0])\n\nprint(\"\".join(letter for position, letter in archive))",
+        password: "TREASURE"
+      },
+      {
+        id: 11,
+        title: "Level 11: SQL Filtered Vault",
+        category: "SQL",
+        type: "Filtering & Ordering",
+        instruction: "Analyze the SQL query execution against the table schema and output the sequence of returned letters.",
+        code: "-- Table Schema: clue_board\n-- Columns: slot (INT), letter (CHAR), valid (INT)\n--\n-- Data Rows:\n-- (1, 'S', 1), (2, 'T', 1), (3, 'A', 1), (4, 'C', 1), (5, 'K', 1)\n-- (9, 'X', 0), (8, 'Q', 0)\n\nSELECT letter\nFROM clue_board\nWHERE valid = 1\nORDER BY slot ASC;",
+        password: "STACK"
+      },
+      {
+        id: 12,
+        title: "Level 12: SQL Queue of Letters",
+        category: "SQL",
+        type: "WHERE Conditions & Sort Order",
+        instruction: "Determine the output returned by the query from table 'queue_clues'.",
+        code: "-- Table Schema: queue_clues\n-- Columns: position (INT), letter (CHAR), active (INT)\n--\n-- Data Rows:\n-- (1, 'Q', 1), (2, 'U', 1), (3, 'E', 1), (4, 'U', 1), (5, 'E', 1)\n-- (6, 'Z', 0), (7, 'X', 0)\n\nSELECT letter\nFROM queue_clues\nWHERE active = 1\nORDER BY position ASC;",
+        password: "QUEUE"
+      },
+      {
+        id: 13,
+        title: "Level 13: SQL Vote Filter",
+        category: "SQL",
+        type: "GROUP BY, HAVING & COUNT(DISTINCT)",
+        instruction: "Trace row filtering, grouping, distinct aggregation, and HAVING filter logic.",
+        code: "-- Table Schema: clue_votes\n-- Columns: slot (INT), letter (CHAR), team_id (INT), valid (INT)\n--\n-- Data Rows:\n-- (1, 'C', 1, 1), (1, 'C', 2, 1)\n-- (2, 'O', 1, 1), (2, 'O', 3, 1)\n-- (3, 'D', 1, 1), (3, 'D', 2, 1)\n-- (4, 'E', 2, 1), (4, 'E', 3, 1)\n-- (5, 'X', 1, 0), (5, 'X', 2, 0)\n\nSELECT letter\nFROM clue_votes\nWHERE valid = 1\nGROUP BY slot, letter\nHAVING COUNT(DISTINCT team_id) >= 2\nORDER BY slot;",
+        password: "CODE"
+      },
+      {
+        id: 14,
+        title: "Level 14: SQL Secret Join",
+        category: "SQL",
+        type: "INNER JOIN & Foreign Key Matching",
+        instruction: "Perform an INNER JOIN between 'agents' and 'key_order' on 'agent_id' and sort by position.",
+        code: "-- Table: agents (agent_id INT, letter CHAR, active INT)\n-- Data: (10, 'J', 1), (11, 'O', 1), (12, 'I', 1), (13, 'N', 1), (99, 'X', 0)\n--\n-- Table: key_order (agent_id INT, position INT)\n-- Data: (12, 3), (10, 1), (13, 4), (11, 2), (99, 5)\n\nSELECT a.letter\nFROM agents AS a\nINNER JOIN key_order AS k\n  ON a.agent_id = k.agent_id\nWHERE a.active = 1\nORDER BY k.position;",
+        password: "JOIN"
+      },
+      {
+        id: 15,
+        title: "Level 15: SQL Nested Subquery",
+        category: "SQL",
+        type: "Nested Scalar Subqueries & MAX()",
+        instruction: "Evaluate the two scalar subqueries first, then apply the resulting criteria to the main query.",
+        code: "-- Table Schema: sql_codes\n-- Columns: slot (INT), letter (CHAR), clearance (INT)\n--\n-- Data Rows:\n-- (1, 'Q', 1), (2, 'U', 1), (3, 'E', 1), (4, 'R', 1), (5, 'Y', 1)\n-- (6, 'X', 0), (7, 'Z', 0)\n\nSELECT letter\nFROM sql_codes\nWHERE clearance = (SELECT MAX(clearance) FROM sql_codes)\n  AND slot <= (SELECT MAX(slot) - 2 FROM sql_codes)\nORDER BY slot;",
+        password: "QUERY"
+      }
+    ];
 
-answer = []
-seen = set()
+    // STATE MANAGEMENT
+    let currentIndex = 0;
+    let totalSeconds = 0;
+    let questionSeconds = 0;
+    let totalTimerInterval = null;
+    let questionTimerInterval = null;
+    let splitTimes = {};
 
-for step in order:
-    if step >= len(cipher):
-        continue
-    if step in seen:
-        continue
-    seen.add(step)
-    answer.append(cipher[step])
+    // IMMEDIATE INITIALIZATION FUNCTION
+    function startApp() {
+      initTimers();
+      renderPuzzle();
+      renderTrackerList();
+    }
 
-print("".join(answer))`,
-        password: 
+    // TIMER MANAGEMENT
+    function initTimers() {
+      totalTimerInterval = setInterval(() => {
+        totalSeconds++;
+        document.getElementById('total-session-timer').textContent = formatTime(totalSeconds);
+      }, 1000);
+
+      startQuestionTimer();
+    }
+
+    function startQuestionTimer() {
+      questionSeconds = 0;
+      document.getElementById('active-question-timer').textContent = "00:00";
+      if (questionTimerInterval) clearInterval(questionTimerInterval);
+      
+      questionTimerInterval = setInterval(() => {
+        questionSeconds++;
+        document.getElementById('active-question-timer').textContent = formatTime(questionSeconds);
+      }, 1000);
+    }
+
+    function formatTime(sec) {
+      const m = Math.floor(sec / 60).toString().padStart(2, '0');
+      const s = (sec % 60).toString().padStart(2, '0');
+      return `${m}:${s}`;
+    }
+
+    // RENDER CURRENT PUZZLE
+    function renderPuzzle() {
+      const puzzle = PUZZLES[currentIndex];
+      
+      document.getElementById('puzzle-category').textContent = puzzle.category;
+      document.getElementById('puzzle-type').textContent = puzzle.type;
+      document.getElementById('puzzle-title').textContent = puzzle.title;
+      document.getElementById('puzzle-instruction').textContent = puzzle.instruction;
+      document.getElementById('puzzle-code').textContent = puzzle.code;
+      document.getElementById('puzzle-progress-text').textContent = `Question ${currentIndex + 1} of ${PUZZLES.length}`;
+      document.getElementById('timer-active-level-tag').textContent = `Q${(currentIndex + 1).toString().padStart(2, '0')}`;
+
+      // Reset Input and Alerts
+      const input = document.getElementById('answer-input');
+      input.value = '';
+      input.focus();
+
+      document.getElementById('feedback-error').classList.add('hidden');
+      document.getElementById('feedback-success').classList.add('hidden');
+
+      updateProgressBar();
+      renderTrackerList();
+    }
+
+    // RENDER SIDEBAR TRACKER
+    function renderTrackerList() {
+      const container = document.getElementById('question-list-tracker');
+      container.innerHTML = '';
+
+      PUZZLES.forEach((p, idx) => {
+        const item = document.createElement('div');
+        item.className = 'flex items-center justify-between p-2 rounded border transition-colors ';
+
+        if (idx < currentIndex) {
+          item.classList.add('bg-slate-900/80', 'border-slate-800', 'text-slate-400');
+          item.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="text-emerald-500 font-bold">✓</span>
+              <span>L${(idx + 1).toString().padStart(2, '0')}: ${p.password}</span>
+            </div>
+            <span class="text-[10px] text-slate-500">${splitTimes[idx] || 'SOLVED'}</span>
+          `;
+        } else if (idx === currentIndex) {
+          item.classList.add('bg-blue-950/40', 'border-blue-700/80', 'text-blue-200');
+          item.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span class="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse"></span>
+              <span class="font-bold">L${(idx + 1).toString().padStart(2, '0')}: Active</span>
+            </div>
+            <span class="text-[10px] text-blue-400">IN PROGRESS</span>
+          `;
+        } else {
+          item.classList.add('bg-slate-950/40', 'border-slate-900', 'text-slate-600');
+          item.innerHTML = `
+            <div class="flex items-center space-x-2">
+              <span>🔒</span>
+              <span>L${(idx + 1).toString().padStart(2, '0')}: Locked</span>
+            </div>
+            <span class="text-[10px] text-slate-700">LOCKED</span>
+          `;
+        }
+
+        container.appendChild(item);
+      });
+    }
+
+    function updateProgressBar() {
+      const pct = Math.round((currentIndex / PUZZLES.length) * 100);
+      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
+      document.getElementById('completion-percentage').textContent = `${pct}% Completed`;
+    }
+
+    // ANSWER SUBMISSION HANDLER
+    function handleAnswerSubmit(e) {
+      e.preventDefault();
+      const inputEl = document.getElementById('answer-input');
+      const userAnswer = inputEl.value.trim().toUpperCase();
+      const currentPuzzle = PUZZLES[currentIndex];
+
+      const errBox = document.getElementById('feedback-error');
+      const successBox = document.getElementById('feedback-success');
+
+      if (userAnswer === currentPuzzle.password) {
+        errBox.classList.add('hidden');
+        successBox.classList.remove('hidden');
+
+        splitTimes[currentIndex] = formatTime(questionSeconds);
+
+        setTimeout(() => {
+          if (currentIndex < PUZZLES.length - 1) {
+            currentIndex++;
+            startQuestionTimer();
+            renderPuzzle();
+          } else {
+            finishHunt();
+          }
+        }, 800);
+
+      } else {
+        successBox.classList.add('hidden');
+        errBox.classList.remove('hidden');
+        inputEl.focus();
+        inputEl.select();
+      }
+    }
+
+    // COMPLETION STATE
+    function finishHunt() {
+      clearInterval(questionTimerInterval);
+      clearInterval(totalTimerInterval);
+
+      document.getElementById('puzzle-card').classList.add('hidden');
+      document.getElementById('completion-card').classList.remove('hidden');
+      document.getElementById('final-total-time').textContent = formatTime(totalSeconds);
+      document.getElementById('header-status').textContent = "Hunt Completed";
+      document.getElementById('header-status').previousElementSibling.className = "h-2 w-2 rounded-full bg-emerald-500";
+      
+      currentIndex = PUZZLES.length;
+      updateProgressBar();
+      renderTrackerList();
+    }
+
+    // RESET HUNT
+    function resetHunt() {
+      currentIndex = 0;
+      totalSeconds = 0;
+      questionSeconds = 0;
+      splitTimes = {};
+
+      document.getElementById('completion-card').classList.add('hidden');
+      document.getElementById('puzzle-card').classList.remove('hidden');
+      document.getElementById('header-status').textContent = "Active Session";
+
+      initTimers();
+      renderPuzzle();
+    }
+
+    // MODAL CONTROL
+    function openModal(id) {
+      document.getElementById(id).showModal();
+    }
+    function closeModal(id) {
+      document.getElementById(id).close();
+    }
+
+    // TRIGGER APPLICATION START
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', startApp);
+    } else {
+      startApp();
+    }
+  </script>
+</body>
+</html>
