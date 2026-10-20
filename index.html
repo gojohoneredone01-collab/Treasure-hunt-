@@ -1,625 +1,363 @@
 
-        <!DOCTYPE html>
-<html lang="en" class="h-full bg-slate-900 text-slate-100">
+     <!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Technical Treasure Hunt :: Educational Tracing Engine</title>
+  <title>TECHNICAL TREASURE HUNT :: HARD MODE</title>
   
   <!-- Inline SVG Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%232563eb' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='4' width='16' height='16' rx='2'/><rect x='9' y='9' width='6' height='6'/><line x1='9' y1='1' x2='9' y2='4'/><line x1='15' y1='1' x2='15' y2='4'/><line x1='9' y1='20' x2='9' y2='23'/><line x1='15' y1='20' x2='15' y2='23'/><line x1='20' y1='9' x2='23' y2='9'/><line x1='20' y1='15' x2='23' y2='15'/><line x1='1' y1='9' x2='4' y2='9'/><line x1='1' y1='15' x2='4' y2='15'/></svg>">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23e0231c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'><rect x='4' y='4' width='16' height='16' rx='2'/><path d='M9 9h6v6H9z'/><path d='M9 1v3M15 1v3M9 20v3M15 20v3M20 9h3M20 15h3M1 9h3M1 15h3'/></svg>">
 
   <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Onest:wght@300;400;500;700&display=swap');
+    
     body {
-      font-family: 'Inter', sans-serif;
+      font-family: 'Onest', 'Inter', sans-serif;
     }
     code, pre {
       font-family: 'JetBrains Mono', monospace;
     }
     dialog::backdrop {
-      background: rgba(15, 23, 42, 0.75);
-      backdrop-filter: blur(2px);
+      background: rgba(8, 10, 15, 0.9);
+      backdrop-filter: blur(4px);
+    }
+
+    /* OFFLINE RESILIENCE OVERRIDES (Fallback CSS if Tailwind/CDNs are blocked/offline) */
+    @media min-width: 0px) {
+      .offline-fallback {
+        background-color: #020617;
+        color: #f1f5f9;
+      }
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: rgba(15, 23, 42, 0.3);
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(224, 35, 28, 0.4);
+      border-radius: 4px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgba(224, 35, 28, 0.7);
+    }
+    
+    /* Glowing accents & brand visual rules */
+    .glow-hover {
+      transition: all 0.3s ease;
+    }
+    .glow-hover:hover {
+      box-shadow: 0 0 15px rgba(224, 35, 28, 0.4);
+      border-color: #e0231c;
+    }
+    
+    /* Interactive Background Particles */
+    #ambient-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      opacity: 0.25;
     }
   </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between bg-slate-900 text-slate-100 antialiased selection:bg-blue-600 selection:text-white">
+<body class="min-h-screen flex flex-col justify-between bg-slate-950 text-slate-100 antialiased selection:bg-[#e0231c] selection:text-white">
 
-  <!-- TOP HEADER -->
-  <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-40">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3">
-        <div class="h-8 w-8 rounded bg-blue-600 flex items-center justify-center font-mono font-bold text-white text-sm">
-          TH
-        </div>
-        <div>
-          <h1 class="text-sm font-semibold tracking-wide text-slate-100 uppercase">Technical Treasure Hunt</h1>
-          <p class="text-xs text-slate-400">Code Tracing & Logic Evaluation Platform</p>
-        </div>
-      </div>
+  <!-- BACKGROUND ARTWORK CANVAS -->
+  <canvas id="ambient-canvas"></canvas>
 
-      <div class="flex items-center space-x-6 text-xs">
-        <div class="hidden sm:flex items-center space-x-2 text-slate-400">
-          <span>Curriculum:</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono">10 Python</span>
-          <span class="px-2 py-0.5 rounded bg-slate-800 text-slate-200 border border-slate-700 font-mono">5 SQL</span>
+  <!-- GAME START / ENTRY PAGE -->
+  <div id="start-screen" class="relative z-10 flex-grow flex flex-col justify-center items-center px-4 py-12 max-w-4xl mx-auto w-full">
+    <div class="text-center space-y-8 w-full">
+      
+      <!-- LOGO & HERO -->
+      <div class="space-y-4">
+        <div class="inline-flex items-center justify-center h-16 w-16 rounded-full border-2 border-[#e0231c]/80 bg-[#e0231c]/10 text-[#e0231c] font-mono text-2xl font-bold animate-pulse shadow-[0_0_20px_rgba(224,35,28,0.25)]">
+          KAGE
         </div>
-        <div class="flex items-center space-x-2">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-slate-300 font-mono" id="header-status">Active Session</span>
+        <div class="space-y-2">
+          <h1 class="text-3xl md:text-5xl font-bold tracking-tight uppercase text-slate-100">
+            Technical Treasure Hunt
+          </h1>
+          <p class="text-sm md:text-base text-slate-400 font-light max-w-xl mx-auto">
+            Gated logical evaluation framework. Crack the algorithms, decrypt the payloads, and uncover the sequence password-by-password.
+          </p>
         </div>
       </div>
-    </div>
-  </header>
 
-  <!-- MAIN WORKSPACE -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      <!-- SAVED PROGRESS RESUME BANNER -->
+      <div id="save-banner" class="hidden max-w-md mx-auto bg-slate-900/60 border border-slate-800 rounded-lg p-4 flex items-center justify-between gap-4">
+        <div class="text-left">
+          <span class="text-xs text-slate-400 uppercase tracking-wider block font-semibold">Active Run Detected</span>
+          <span id="save-badge-details" class="text-sm font-mono text-blue-400">Level 01 | 00:00:00 elapsed</span>
+        </div>
+        <button onclick="resetHunt()" class="text-[10px] text-red-500 hover:text-red-400 uppercase font-bold tracking-wider hover:underline">
+          Clear Data
+        </button>
+      </div>
 
-      <!-- LEFT COLUMN: QUESTION CONTENT & SUBMISSION AREA (8 COLS) -->
-      <section class="lg:col-span-8 space-y-6">
+      <!-- MAIN CONTROLS -->
+      <div class="max-w-sm mx-auto space-y-3">
+        <button 
+          onclick="launchHuntGame()" 
+          id="btn-primary-start"
+          class="w-full bg-[#e0231c] hover:bg-[#c11c16] text-white py-3.5 px-6 rounded-md text-sm font-medium uppercase tracking-widest transition-all glow-hover shadow-[0_4px_20px_rgba(224,35,28,0.3)] focus:outline-none focus:ring-2 focus:ring-[#e0231c] flex items-center justify-center space-x-2"
+        >
+          <span>Start System Hunt</span>
+          <svg class="w-4 h-4 transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+          </svg>
+        </button>
         
-        <!-- ACTIVE PUZZLE CARD -->
-        <div id="puzzle-card" class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-6 space-y-6">
-          
-          <!-- PUZZLE HEADER METADATA -->
-          <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-700/60">
-            <div>
-              <div class="flex items-center space-x-2">
-                <span id="puzzle-category" class="px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-blue-950 text-blue-300 border border-blue-800">PYTHON</span>
-                <span id="puzzle-type" class="text-xs text-slate-400 font-mono">Data Structures</span>
-              </div>
-              <h2 id="puzzle-title" class="text-xl font-bold text-slate-100 mt-1">Level 01: Stack Vault</h2>
-            </div>
+        <p class="text-[11px] text-slate-500 font-mono tracking-wide">
+          SESSION DATA AUTOMATICALLY PRESERVED TO LOCAL STORAGE
+        </p>
+      </div>
 
-            <div class="text-right">
-              <span class="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Progress</span>
-              <span id="puzzle-progress-text" class="text-sm font-mono text-slate-200 font-semibold">Question 1 of 15</span>
-            </div>
-          </div>
-
-          <!-- INSTRUCTION PROMPT -->
-          <div class="space-y-2">
-            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Instructions</h3>
-            <p id="puzzle-instruction" class="text-sm text-slate-300 leading-relaxed">
-              Trace the execution of the Python program below. Evaluate all list manipulations, conditionals, and loop iterations to determine the final exact string printed.
-            </p>
-          </div>
-
-          <!-- CODE DISPLAY BOX -->
-          <div class="space-y-2">
-            <div class="flex justify-between items-center text-xs text-slate-400 font-mono px-1">
-              <span>Source Payload</span>
-              <span>UTF-8 Plaintext</span>
-            </div>
-            <div class="relative rounded-md bg-slate-950 border border-slate-800 p-4 overflow-x-auto">
-              <pre><code id="puzzle-code" class="text-sm text-slate-200 leading-relaxed">Initializing puzzle...</code></pre>
-            </div>
-          </div>
-
-          <!-- SUBMISSION & FEEDBACK FORM -->
-          <form id="answer-form" class="space-y-4 pt-2" onsubmit="handleAnswerSubmit(event)">
-            <div class="space-y-2">
-              <label for="answer-input" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
-                Enter Decoded Password / Query Result
-              </label>
-              <div class="flex flex-col sm:flex-row gap-3">
-                <input 
-                  type="text" 
-                  id="answer-input" 
-                  name="answer" 
-                  autocomplete="off" 
-                  spellcheck="false" 
-                  placeholder="e.g. STACK"
-                  class="flex-grow bg-slate-900 border border-slate-700 rounded-md px-4 py-2.5 text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all uppercase"
-                  required
-                >
-                <button 
-                  type="submit" 
-                  class="bg-blue-600 hover:bg-blue-500 text-white font-medium px-6 py-2.5 rounded-md text-sm transition-colors flex items-center justify-center space-x-2 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-blue-400"
-                >
-                  <span>Submit Solution</span>
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-                </button>
-              </div>
-              <p class="text-xs text-slate-400">Passwords are case-insensitive and stripped of whitespace.</p>
-            </div>
-
-            <!-- FEEDBACK MESSAGES -->
-            <div id="feedback-error" class="hidden p-3 rounded-md bg-red-950/50 border border-red-800/80 text-red-200 text-xs flex items-start space-x-2">
-              <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-              <span id="feedback-error-text">Incorrect solution. Re-trace your variable state table and try again.</span>
-            </div>
-
-            <div id="feedback-success" class="hidden p-3 rounded-md bg-emerald-950/50 border border-emerald-800/80 text-emerald-200 text-xs flex items-start space-x-2">
-              <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-              <span>ACCESS GRANTED. Correct solution verified. Unlocking next level...</span>
-            </div>
-          </form>
-
+      <!-- GAME SPECIFICATION OVERVIEW -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-left max-w-2xl mx-auto pt-6 border-t border-slate-900">
+        <div class="p-4 rounded-md bg-slate-900/30 border border-slate-900">
+          <span class="text-[#e0231c] font-mono text-sm block mb-1">01. THE DIRECTIVE</span>
+          <span class="text-xs text-slate-400 font-light leading-relaxed">
+            Solve each puzzle step-by-step to reveal the password to unzip the next layer's archive.
+          </span>
         </div>
+        <div class="p-4 rounded-md bg-slate-900/30 border border-slate-900">
+          <span class="text-[#e0231c] font-mono text-sm block mb-1">02. NO RESETS</span>
+          <span class="text-xs text-slate-400 font-light leading-relaxed">
+            Progress is persistently saved offline. If you close your browser or reload, your location and split timers will be saved exactly as you left them.
+          </span>
+        </div>
+        <div class="p-4 rounded-md bg-slate-900/30 border border-slate-900">
+          <span class="text-[#e0231c] font-mono text-sm block mb-1">03. ARCHIVES</span>
+          <span class="text-xs text-slate-400 font-light leading-relaxed">
+            Every step requires retrieving raw CLUE payloads to unlock targeted Locked ZIPs in proper sequence.
+          </span>
+        </div>
+      </div>
 
-        <!-- FINAL COMPLETION STATE (HIDDEN UNTIL ALL 15 SOLVED) -->
-        <div id="completion-card" class="hidden bg-slate-800/60 border border-emerald-700/80 rounded-lg p-8 space-y-6 text-center">
-          <div class="h-12 w-12 bg-emerald-600/20 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-500/40">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+    </div>
+  </div>
+
+  <!-- ACTIVE WORKSPACE -->
+  <div id="game-workspace" class="hidden relative z-10 flex-grow w-full">
+    <header class="border-b border-slate-800 bg-slate-950/80 sticky top-0 z-40">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
+          <div class="h-8 w-8 rounded bg-[#e0231c] flex items-center justify-center font-mono font-bold text-white text-sm">
+            TH
           </div>
           <div>
-            <h2 class="text-2xl font-bold text-slate-100">Treasure Hunt Complete!</h2>
-            <p class="text-sm text-slate-300 mt-2 max-w-lg mx-auto">
-              All 15 technical code tracing puzzles have been successfully solved and verified. Excellent evaluation work.
-            </p>
-          </div>
-
-          <div class="grid grid-cols-2 gap-4 max-w-md mx-auto pt-2">
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded-md">
-              <span class="text-xs text-slate-400 uppercase tracking-wider block">Total Elapsed Time</span>
-              <span id="final-total-time" class="text-2xl font-mono font-bold text-blue-400">00:00</span>
-            </div>
-            <div class="bg-slate-900 border border-slate-700 p-4 rounded-md">
-              <span class="text-xs text-slate-400 uppercase tracking-wider block">Puzzles Solved</span>
-              <span class="text-2xl font-mono font-bold text-emerald-400">15 / 15</span>
-            </div>
-          </div>
-
-          <div class="pt-4">
-            <button 
-              onclick="resetHunt()" 
-              class="bg-slate-700 hover:bg-slate-600 text-slate-200 font-medium px-6 py-2.5 rounded-md text-sm transition-colors border border-slate-600"
-            >
-              Reset Hunt Engine
-            </button>
+            <h1 class="text-sm font-semibold tracking-wide text-slate-100 uppercase">Technical Treasure Hunt</h1>
+            <p class="text-xs text-slate-400">Hard Mode // Operations Dashboard</p>
           </div>
         </div>
 
-      </section>
+        <div class="flex items-center space-x-4">
+          <button onclick="returnToStart()" class="text-xs text-slate-400 hover:text-[#e0231c] transition-colors uppercase font-mono tracking-wider">
+            ⚙️ Menu
+          </button>
+        </div>
+      </div>
+    </header>
 
-      <!-- RIGHT COLUMN: SIDEBAR TIMER & PROGRESS METRICS (4 COLS) -->
-      <aside class="lg:col-span-4 space-y-6">
-        
-        <!-- REAL-TIME TIMER CARD -->
-        <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-5 space-y-4">
-          <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
-            <span>Session Timers</span>
-            <span class="h-2 w-2 rounded-full bg-blue-500"></span>
-          </h3>
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-          <div class="space-y-3">
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-md flex items-center justify-between">
+        <!-- LEFT COLUMN: GATED RESOURCES & GAME BOARD -->
+        <section class="lg:col-span-8 space-y-6">
+          
+          <!-- TWO-FILE FILE & CLUE ACCESS CARD (EMPTY SPACE IN CODE) -->
+          <div id="file-access-card" class="bg-slate-900/80 border border-[#e0231c]/25 rounded-lg p-5 space-y-4 relative overflow-hidden">
+            <div class="absolute top-0 right-0 h-16 w-16 bg-[#e0231c]/5 rounded-bl-full pointer-events-none border-l border-b border-[#e0231c]/10"></div>
+            
+            <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div class="flex items-center space-x-2">
+                <span class="h-2 w-2 rounded-full bg-[#e0231c]"></span>
+                <h3 class="text-xs font-semibold text-slate-300 uppercase tracking-wider">Resource Allocation & Files</h3>
+              </div>
+              <span class="text-[10px] font-mono text-slate-500 uppercase tracking-widest">Active Level Dependencies</span>
+            </div>
+
+            <!-- Double Target System -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              
+              <!-- Target 1: CLUE_0X_DATA.TXT -->
+              <div class="p-4 rounded bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-mono text-[#e0231c] bg-[#e0231c]/10 px-2 py-0.5 rounded border border-[#e0231c]/20 uppercase">CLUE DOCUMENT</span>
+                    <span class="text-[9px] font-mono text-slate-600">UNRESTRICTED</span>
+                  </div>
+                  <h4 id="clue-filename" class="text-sm font-mono text-slate-200">clue_01_data.txt</h4>
+                  <p class="text-xs text-slate-500 mt-1 font-light">Contains dataset variables, logic blocks, payload code, and operations sequence.</p>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="viewClueModal()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 py-2 rounded font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-1">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+                    <span>View Clue</span>
+                  </button>
+                  <button onclick="triggerFileDownload(true)" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 p-2 rounded transition-all">
+                    📥
+                  </button>
+                </div>
+              </div>
+
+              <!-- Target 2: CLUE_0X.ZIP (THE PASS/ZIP FILE SPACE) -->
+              <div class="p-4 rounded bg-slate-950 border border-slate-800 flex flex-col justify-between space-y-3">
+                <div>
+                  <div class="flex items-center justify-between mb-1">
+                    <span class="text-[10px] font-mono text-blue-400 bg-blue-950/20 px-2 py-0.5 rounded border border-blue-900/40 uppercase">LOCKED ZIP ARCHIVE</span>
+                    <span class="text-[9px] font-mono text-[#e0231c]">PASS LOCKED</span>
+                  </div>
+                  <h4 id="archive-filename" class="text-sm font-mono text-slate-200">CLUE_01.zip</h4>
+                  <p class="text-xs text-slate-500 mt-1 font-light">Protected simulation block containing payloads and triggers for the next challenge tier.</p>
+                </div>
+                <div class="flex gap-2">
+                  <button onclick="viewLockedZIPModal()" class="w-full bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 py-2 rounded font-mono uppercase tracking-wider transition-all flex items-center justify-center gap-1">
+                    🔑 Analyze ZIP
+                  </button>
+                  <button onclick="triggerFileDownload(false)" class="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-xs text-slate-300 p-2 rounded transition-all">
+                    📥
+                  </button>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- ACTIVE PUZZLE VIEW PANEL -->
+          <div id="puzzle-card" class="bg-slate-900/60 border border-slate-800 rounded-lg p-6 space-y-6">
+            
+            <!-- PUZZLE HEADER METADATA -->
+            <div class="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-800">
               <div>
-                <span class="text-xs text-slate-400 block">Current Question</span>
-                <span id="active-question-timer" class="text-xl font-mono font-bold text-slate-100">00:00</span>
+                <div class="flex items-center space-x-2">
+                  <span id="puzzle-category" class="px-2.5 py-0.5 rounded text-xs font-mono font-semibold bg-blue-950 text-blue-300 border border-blue-800">PYTHON</span>
+                  <span id="puzzle-type" class="text-xs text-slate-400 font-mono">Data Structures</span>
+                </div>
+                <h2 id="puzzle-title" class="text-xl font-bold text-slate-100 mt-1">Level 01: Stack Vault</h2>
               </div>
+
               <div class="text-right">
-                <span class="text-xs text-slate-500 block">Active Level</span>
-                <span id="timer-active-level-tag" class="text-xs font-mono text-blue-400">Q01</span>
+                <span class="text-xs text-slate-400 block uppercase tracking-wider font-semibold">Progress</span>
+                <span id="puzzle-progress-text" class="text-sm font-mono text-slate-200 font-semibold">Question 1 of 15</span>
               </div>
             </div>
 
-            <div class="bg-slate-900 border border-slate-800 p-3 rounded-md flex items-center justify-between">
-              <div>
-                <span class="text-xs text-slate-400 block">Total Elapsed Time</span>
-                <span id="total-session-timer" class="text-xl font-mono font-bold text-slate-300">00:00</span>
+            <!-- INSTRUCTION PROMPT -->
+            <div class="space-y-2">
+              <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Instructions</h3>
+              <p id="puzzle-instruction" class="text-sm text-slate-300 leading-relaxed">
+                Trace the execution of the Python program below. Evaluate all list manipulations, conditionals, and loop iterations to determine the final exact string printed.
+              </p>
+            </div>
+
+            <!-- CODE DISPLAY BOX -->
+            <div class="space-y-2">
+              <div class="flex justify-between items-center text-xs text-slate-500 font-mono px-1">
+                <span>Source Payload</span>
+                <span>UTF-8 Plaintext</span>
               </div>
-              <div class="text-right">
-                <span class="text-xs text-slate-500 block">Clock State</span>
-                <span class="text-xs font-mono text-emerald-400">RUNNING</span>
+              <div class="relative rounded-md bg-slate-950 border border-slate-900 p-4 overflow-x-auto border-l-2 border-[#e0231c]">
+                <pre><code id="puzzle-code" class="text-sm text-slate-200 leading-relaxed">Initializing puzzle...</code></pre>
               </div>
             </div>
+
+            <!-- SUBMISSION & FEEDBACK FORM -->
+            <form id="answer-form" class="space-y-4 pt-2" onsubmit="handleAnswerSubmit(event)">
+              <div class="space-y-2">
+                <label for="answer-input" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                  Enter Decoded Password / Query Result
+                </label>
+                <div class="flex flex-col sm:flex-row gap-3">
+                  <input 
+                    type="text" 
+                    id="answer-input" 
+                    name="answer" 
+                    autocomplete="off" 
+                    spellcheck="false" 
+                    placeholder="e.g. STACK"
+                    class="flex-grow bg-slate-950 border border-slate-800 rounded-md px-4 py-2.5 text-slate-100 font-mono placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-[#e0231c] focus:border-transparent transition-all uppercase"
+                    required
+                  >
+                  <button 
+                    type="submit" 
+                    class="bg-[#e0231c] hover:bg-[#c11c16] text-white font-medium px-6 py-2.5 rounded-md text-sm uppercase tracking-wider transition-colors flex items-center justify-center space-x-2 whitespace-nowrap focus:outline-none focus:ring-2 focus:ring-[#e0231c]"
+                  >
+                    <span>Submit</span>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                  </button>
+                </div>
+                <p class="text-[10px] text-slate-500 font-mono">PASSWORDS ARE CASE-INSENSITIVE AND STRIPPED OF WHITESPACE.</p>
+              </div>
+
+              <!-- FEEDBACK MESSAGES -->
+              <div id="feedback-error" class="hidden p-3 rounded-md bg-red-950/30 border border-red-900/60 text-red-200 text-xs flex items-start space-x-2">
+                <svg class="w-4 h-4 text-red-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                <span id="feedback-error-text">Incorrect solution. Re-trace your variable state table and try again.</span>
+              </div>
+
+              <div id="feedback-success" class="hidden p-3 rounded-md bg-emerald-950/30 border border-emerald-900/60 text-emerald-200 text-xs flex items-start space-x-2">
+                <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                <span>ACCESS GRANTED. Correct solution verified. Next stage initialized.</span>
+              </div>
+            </form>
+
           </div>
-        </div>
 
-        <!-- LEVEL PROGRESS METRICS CARD -->
-        <div class="bg-slate-800/60 border border-slate-700/80 rounded-lg p-5 space-y-4">
-          <div class="flex items-center justify-between">
-            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Level Status</h3>
-            <span id="completion-percentage" class="text-xs font-mono text-slate-300 font-semibold">0% Completed</span>
-          </div>
-
-          <!-- PROGRESS BAR -->
-          <div class="w-full bg-slate-900 rounded-full h-2 border border-slate-800 overflow-hidden">
-            <div id="progress-bar-fill" class="bg-blue-600 h-full transition-all duration-300 w-0"></div>
-          </div>
-
-          <!-- LOCKED QUESTION LIST OVERVIEW -->
-          <div class="space-y-1.5 pt-2 max-h-[360px] overflow-y-auto pr-1 text-xs font-mono" id="question-list-tracker">
-            <!-- Dynamically populated via JavaScript -->
-          </div>
-        </div>
-
-      </aside>
-
-    </div>
-  </main>
-
-  <!-- FOOTER -->
-  <footer class="border-t border-slate-800 bg-slate-950 py-6 text-xs text-slate-400">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-      <div class="flex items-center space-x-2">
-        <span>Technical Treasure Hunt Engine</span>
-        <span>&bull;</span>
-        <span>Computer Science Evaluation Platform</span>
-      </div>
-      <div class="flex items-center space-x-6">
-        <button onclick="openModal('terms-dialog')" class="hover:text-slate-200 transition-colors underline">Terms of Service</button>
-        <button onclick="openModal('privacy-dialog')" class="hover:text-slate-200 transition-colors underline">Privacy Policy</button>
-      </div>
-    </div>
-  </footer>
-
-  <!-- TERMS OF SERVICE MODAL -->
-  <dialog id="terms-dialog" class="rounded-lg bg-slate-900 border border-slate-700 text-slate-200 p-6 max-w-xl w-full">
-    <div class="space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-base font-bold text-slate-100">Terms of Service</h3>
-        <button onclick="closeModal('terms-dialog')" class="text-slate-400 hover:text-white">&times;</button>
-      </div>
-      <div class="text-xs leading-relaxed space-y-3 text-slate-300 max-h-80 overflow-y-auto pr-2">
-        <p>This technical tracing platform is provided strictly for educational assessment and computer science instruction.</p>
-        <p>Users must submit solutions derived strictly through personal manual tracing, calculation, or execution analysis without automated bypass techniques.</p>
-        <p>All curriculum material, including Python code samples and SQL schemas, is formatted for classroom evaluation.</p>
-      </div>
-      <div class="pt-2 text-right">
-        <button onclick="closeModal('terms-dialog')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs">Close</button>
-      </div>
-    </div>
-  </dialog>
-
-  <!-- PRIVACY POLICY MODAL -->
-  <dialog id="privacy-dialog" class="rounded-lg bg-slate-900 border border-slate-700 text-slate-200 p-6 max-w-xl w-full">
-    <div class="space-y-4">
-      <div class="flex items-center justify-between pb-3 border-b border-slate-800">
-        <h3 class="text-base font-bold text-slate-100">Privacy Policy</h3>
-        <button onclick="closeModal('privacy-dialog')" class="text-slate-400 hover:text-white">&times;</button>
-      </div>
-      <div class="text-xs leading-relaxed space-y-3 text-slate-300 max-h-80 overflow-y-auto pr-2">
-        <p>This application operates completely on the client side inside your web browser.</p>
-        <p>No solution inputs, elapsed split times, or progress data are transmitted to external servers or remote endpoints.</p>
-        <p>Local session state remains contained entirely in active browser memory during execution.</p>
-      </div>
-      <div class="pt-2 text-right">
-        <button onclick="closeModal('privacy-dialog')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs">Close</button>
-      </div>
-    </div>
-  </dialog>
-
-  <!-- JAVASCRIPT ENGINE & PUZZLE PAYLOAD -->
-  <script>
-    // COMPLETE 15 PUZZLE PAYLOAD
-    const PUZZLES = [
-      {
-        id: 1,
-        title: "Level 01: Stack Vault",
-        category: "PYTHON",
-        type: "Data Structures - Stack (LIFO)",
-        instruction: "Trace the execution of the Python program. What string is printed at the end?",
-        code: "vault = [\"K\", \"X\", \"C\", \"A\", \"Q\", \"T\", \"S\", \"Z\"]\ntrash = {\"X\", \"Q\", \"Z\"}\nstack = []\n\nfor i, ch in enumerate(vault):\n    if ch not in trash and i % 2 == 0:\n        stack.append(ch)\n    elif ch not in trash and i % 2 != 0:\n        stack.append(ch.lower())\n\nout = \"\"\nwhile stack:\n    out += stack.pop().upper()\n\nprint(out)",
-        password: "STACK"
-      },
-      {
-        id: 2,
-        title: "Level 02: Queue Processor",
-        category: "PYTHON",
-        type: "Data Structures - Queue (FIFO)",
-        instruction: "Trace the queue operations. What password is produced when the queue is emptied?",
-        code: "data = [\"Q\", \"X\", \"U\", \"E\", \"U\", \"Z\", \"E\"]\nnoise = (\"X\", \"Z\")\nqueue = []\n\nfor ch in data:\n    if ch not in noise:\n        queue.append(ch)\n\npassword = \"\"\nwhile queue:\n    password += queue.pop(0)\n\nprint(password)",
-        password: "QUEUE"
-      },
-      {
-        id: 3,
-        title: "Level 03: Loop & Sorting",
-        category: "PYTHON",
-        type: "Control Flow & Tuple Sorting",
-        instruction: "Trace the loop filtering and ASCII character decoding.",
-        code: "data = [\n    (4, 80, True),\n    (1, 76, True),\n    (99, 88, False),\n    (3, 79, True),\n    (2, 79, True),\n    (0, 0, False)\n]\n\nsignal = []\nfor position, value, valid in data:\n    if not valid:\n        continue\n    if position > 0:\n        signal.append((position, value))\n\nsignal.sort()\n\npassword = \"\"\nfor position, value in signal:\n    password += chr(value)\n\nprint(password)",
-        password: "LOOP"
-      },
-      {
-        id: 4,
-        title: "Level 04: List Manipulation",
-        category: "PYTHON",
-        type: "List Indexing & Slicing",
-        instruction: "Carefully track list mutation as items are popped by index.",
-        code: "letters = list(\"LQIXSXT\")\n\nletters.pop(1)\nletters.pop(2)\nletters.pop(3)\n\nghost = letters[::-1]\nletters = ghost[::-1]\n\nprint(\"\".join(letters))",
-        password: "LIST"
-      },
-      {
-        id: 5,
-        title: "Level 05: Tuple & Ranking",
-        category: "PYTHON",
-        type: "Tuple Unpacking & Prepending",
-        instruction: "Trace the tuple sorting by rank and string prepending behavior.",
-        code: "records = (\n    (\"E\", 5, True),\n    (\"P\", 3, True),\n    (\"X\", 99, False),\n    (\"T\", 1, True),\n    (\"L\", 4, True),\n    (\"U\", 2, True),\n    (\"Q\", 0, False)\n)\n\nvalid = []\nfor letter, rank, status in records:\n    if status and rank > 0:\n        valid.append((rank, letter))\n\nvalid.sort(key=lambda item: item[0], reverse=True)\n\npassword = \"\"\nfor rank, letter in valid:\n    password = letter + password\n\nprint(password)",
-        password: "TUPLE"
-      },
-      {
-        id: 6,
-        title: "Level 06: Dictionary Lookup",
-        category: "PYTHON",
-        type: "Dictionary Keys & Sets",
-        instruction: "Determine the output by evaluating sorted dictionary key access.",
-        code: "box = {\n    9: \"X\",\n    2: \"I\",\n    5: \"Q\",\n    1: \"D\",\n    4: \"T\",\n    3: \"C\",\n    8: \"Z\"\n}\n\nnoise = {5, 8, 9}\nresult = \"\"\n\nfor key in sorted(box):\n    if key in noise:\n        continue\n    if key % 2 == 0:\n        result += box[key]\n    else:\n        result += box[key]\n\nprint(result)",
-        password: "DICT"
-      },
-      {
-        id: 7,
-        title: "Level 07: Index & Duplicate",
-        category: "PYTHON",
-        type: "String Indexing & Sets",
-        instruction: "Trace the order vector, duplicate index set filtering, and bounds checking.",
-        code: "cipher = \"ANEBIXD\"\norder = [4, 1, 6, 2, 5, 1, 99]\n\nanswer = []\nseen = set()\n\nfor step in order:\n    if step >= len(cipher):\n        continue\n    if step in seen:\n        continue\n    seen.add(step)\n    answer.append(cipher[step])\n\nprint(\"\".join(answer))",
-        password: "INDEX"
-      },
-      {
-        id: 8,
-        title: "Level 08: ASCII & Reverse",
-        category: "PYTHON",
-        type: "Slice Reversal & ASCII Boundaries",
-        instruction: "Evaluate reversed iteration and ASCII value boundary conditions.",
-        code: "data = [71, 12, 85, 0, 66, 34, 69, 68]\nblocked = {0, 12, 34}\npieces = []\n\nfor number in data[::-1]:\n    if number in blocked:\n        continue\n    if number < 65 or number > 90:\n        continue\n    pieces.append(chr(number))\n\nprint(\"\".join(pieces))",
-        password: "DEBUG"
-      },
-      {
-        id: 9,
-        title: "Level 09: Arithmetic Decoding",
-        category: "PYTHON",
-        type: "Enumerate & Character Transformation",
-        instruction: "Filter by even indexes and increment ASCII character codes.",
-        code: "data = [82, 11, 68, 64, 64, 4, 81, 66, 66, 68, 71]\npassword = \"\"\n\nfor i, number in enumerate(data):\n    if i % 2 == 0:\n        password += chr(number + 1)\n\nprint(password)",
-        password: "SEARCH"
-      },
-      {
-        id: 10,
-        title: "Level 10: Master Archive",
-        category: "PYTHON",
-        type: "Complex Comprehension & Sorting",
-        instruction: "Perform status filtering, lambda key sorting, and string joining.",
-        code: "records = [\n    (4, \"A\", 1), (1, \"T\", 1), (6, \"U\", 1),\n    (2, \"R\", 1), (5, \"S\", 1), (3, \"E\", 1),\n    (7, \"R\", 1), (8, \"E\", 1), (9, \"X\", 0),\n    (10, \"Q\", 0), (2, \"Z\", 0)\n]\n\narchive = []\nfor position, letter, status in records:\n    if status == 1:\n        archive.append((position, letter))\n\narchive.sort(key=lambda item: item[0])\n\nprint(\"\".join(letter for position, letter in archive))",
-        password: "TREASURE"
-      },
-      {
-        id: 11,
-        title: "Level 11: SQL Filtered Vault",
-        category: "SQL",
-        type: "Filtering & Ordering",
-        instruction: "Analyze the SQL query execution against the table schema and output the sequence of returned letters.",
-        code: "-- Table Schema: clue_board\n-- Columns: slot (INT), letter (CHAR), valid (INT)\n--\n-- Data Rows:\n-- (1, 'S', 1), (2, 'T', 1), (3, 'A', 1), (4, 'C', 1), (5, 'K', 1)\n-- (9, 'X', 0), (8, 'Q', 0)\n\nSELECT letter\nFROM clue_board\nWHERE valid = 1\nORDER BY slot ASC;",
-        password: "STACK"
-      },
-      {
-        id: 12,
-        title: "Level 12: SQL Queue of Letters",
-        category: "SQL",
-        type: "WHERE Conditions & Sort Order",
-        instruction: "Determine the output returned by the query from table 'queue_clues'.",
-        code: "-- Table Schema: queue_clues\n-- Columns: position (INT), letter (CHAR), active (INT)\n--\n-- Data Rows:\n-- (1, 'Q', 1), (2, 'U', 1), (3, 'E', 1), (4, 'U', 1), (5, 'E', 1)\n-- (6, 'Z', 0), (7, 'X', 0)\n\nSELECT letter\nFROM queue_clues\nWHERE active = 1\nORDER BY position ASC;",
-        password: "QUEUE"
-      },
-      {
-        id: 13,
-        title: "Level 13: SQL Vote Filter",
-        category: "SQL",
-        type: "GROUP BY, HAVING & COUNT(DISTINCT)",
-        instruction: "Trace row filtering, grouping, distinct aggregation, and HAVING filter logic.",
-        code: "-- Table Schema: clue_votes\n-- Columns: slot (INT), letter (CHAR), team_id (INT), valid (INT)\n--\n-- Data Rows:\n-- (1, 'C', 1, 1), (1, 'C', 2, 1)\n-- (2, 'O', 1, 1), (2, 'O', 3, 1)\n-- (3, 'D', 1, 1), (3, 'D', 2, 1)\n-- (4, 'E', 2, 1), (4, 'E', 3, 1)\n-- (5, 'X', 1, 0), (5, 'X', 2, 0)\n\nSELECT letter\nFROM clue_votes\nWHERE valid = 1\nGROUP BY slot, letter\nHAVING COUNT(DISTINCT team_id) >= 2\nORDER BY slot;",
-        password: "CODE"
-      },
-      {
-        id: 14,
-        title: "Level 14: SQL Secret Join",
-        category: "SQL",
-        type: "INNER JOIN & Foreign Key Matching",
-        instruction: "Perform an INNER JOIN between 'agents' and 'key_order' on 'agent_id' and sort by position.",
-        code: "-- Table: agents (agent_id INT, letter CHAR, active INT)\n-- Data: (10, 'J', 1), (11, 'O', 1), (12, 'I', 1), (13, 'N', 1), (99, 'X', 0)\n--\n-- Table: key_order (agent_id INT, position INT)\n-- Data: (12, 3), (10, 1), (13, 4), (11, 2), (99, 5)\n\nSELECT a.letter\nFROM agents AS a\nINNER JOIN key_order AS k\n  ON a.agent_id = k.agent_id\nWHERE a.active = 1\nORDER BY k.position;",
-        password: "JOIN"
-      },
-      {
-        id: 15,
-        title: "Level 15: SQL Nested Subquery",
-        category: "SQL",
-        type: "Nested Scalar Subqueries & MAX()",
-        instruction: "Evaluate the two scalar subqueries first, then apply the resulting criteria to the main query.",
-        code: "-- Table Schema: sql_codes\n-- Columns: slot (INT), letter (CHAR), clearance (INT)\n--\n-- Data Rows:\n-- (1, 'Q', 1), (2, 'U', 1), (3, 'E', 1), (4, 'R', 1), (5, 'Y', 1)\n-- (6, 'X', 0), (7, 'Z', 0)\n\nSELECT letter\nFROM sql_codes\nWHERE clearance = (SELECT MAX(clearance) FROM sql_codes)\n  AND slot <= (SELECT MAX(slot) - 2 FROM sql_codes)\nORDER BY slot;",
-        password: "QUERY"
-      }
-    ];
-
-    // STATE MANAGEMENT
-    let currentIndex = 0;
-    let totalSeconds = 0;
-    let questionSeconds = 0;
-    let totalTimerInterval = null;
-    let questionTimerInterval = null;
-    let splitTimes = {};
-
-    // IMMEDIATE INITIALIZATION FUNCTION
-    function startApp() {
-      initTimers();
-      renderPuzzle();
-      renderTrackerList();
-    }
-
-    // TIMER MANAGEMENT
-    function initTimers() {
-      totalTimerInterval = setInterval(() => {
-        totalSeconds++;
-        document.getElementById('total-session-timer').textContent = formatTime(totalSeconds);
-      }, 1000);
-
-      startQuestionTimer();
-    }
-
-    function startQuestionTimer() {
-      questionSeconds = 0;
-      document.getElementById('active-question-timer').textContent = "00:00";
-      if (questionTimerInterval) clearInterval(questionTimerInterval);
-      
-      questionTimerInterval = setInterval(() => {
-        questionSeconds++;
-        document.getElementById('active-question-timer').textContent = formatTime(questionSeconds);
-      }, 1000);
-    }
-
-    function formatTime(sec) {
-      const m = Math.floor(sec / 60).toString().padStart(2, '0');
-      const s = (sec % 60).toString().padStart(2, '0');
-      return `${m}:${s}`;
-    }
-
-    // RENDER CURRENT PUZZLE
-    function renderPuzzle() {
-      const puzzle = PUZZLES[currentIndex];
-      
-      document.getElementById('puzzle-category').textContent = puzzle.category;
-      document.getElementById('puzzle-type').textContent = puzzle.type;
-      document.getElementById('puzzle-title').textContent = puzzle.title;
-      document.getElementById('puzzle-instruction').textContent = puzzle.instruction;
-      document.getElementById('puzzle-code').textContent = puzzle.code;
-      document.getElementById('puzzle-progress-text').textContent = `Question ${currentIndex + 1} of ${PUZZLES.length}`;
-      document.getElementById('timer-active-level-tag').textContent = `Q${(currentIndex + 1).toString().padStart(2, '0')}`;
-
-      // Reset Input and Alerts
-      const input = document.getElementById('answer-input');
-      input.value = '';
-      input.focus();
-
-      document.getElementById('feedback-error').classList.add('hidden');
-      document.getElementById('feedback-success').classList.add('hidden');
-
-      updateProgressBar();
-      renderTrackerList();
-    }
-
-    // RENDER SIDEBAR TRACKER
-    function renderTrackerList() {
-      const container = document.getElementById('question-list-tracker');
-      container.innerHTML = '';
-
-      PUZZLES.forEach((p, idx) => {
-        const item = document.createElement('div');
-        item.className = 'flex items-center justify-between p-2 rounded border transition-colors ';
-
-        if (idx < currentIndex) {
-          item.classList.add('bg-slate-900/80', 'border-slate-800', 'text-slate-400');
-          item.innerHTML = `
-            <div class="flex items-center space-x-2">
-              <span class="text-emerald-500 font-bold">✓</span>
-              <span>L${(idx + 1).toString().padStart(2, '0')}: ${p.password}</span>
+          <!-- FINAL COMPLETION STATE -->
+          <div id="completion-card" class="hidden bg-slate-900/40 border border-emerald-900/60 rounded-lg p-8 space-y-6 text-center">
+            <div class="h-12 w-12 bg-emerald-950/50 text-emerald-400 rounded-full flex items-center justify-center mx-auto border border-emerald-800">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
             </div>
-            <span class="text-[10px] text-slate-500">${splitTimes[idx] || 'SOLVED'}</span>
-          `;
-        } else if (idx === currentIndex) {
-          item.classList.add('bg-blue-950/40', 'border-blue-700/80', 'text-blue-200');
-          item.innerHTML = `
-            <div class="flex items-center space-x-2">
-              <span class="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse"></span>
-              <span class="font-bold">L${(idx + 1).toString().padStart(2, '0')}: Active</span>
+            <div>
+              <h2 class="text-2xl font-bold text-slate-100">Operation Successful</h2>
+              <p class="text-sm text-slate-300 mt-2 max-w-lg mx-auto leading-relaxed">
+                All layers resolved. You have cracked the Technical Treasure Hunt archive progression. Return file check is complete.
+              </p>
             </div>
-            <span class="text-[10px] text-blue-400">IN PROGRESS</span>
-          `;
-        } else {
-          item.classList.add('bg-slate-950/40', 'border-slate-900', 'text-slate-600');
-          item.innerHTML = `
-            <div class="flex items-center space-x-2">
-              <span>🔒</span>
-              <span>L${(idx + 1).toString().padStart(2, '0')}: Locked</span>
+
+            <div class="grid grid-cols-2 gap-4 max-w-md mx-auto pt-2">
+              <div class="bg-slate-950 border border-slate-900 p-4 rounded-md text-left">
+                <span class="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Overall Elapsed Time</span>
+                <span id="final-total-time" class="text-2xl font-mono font-bold text-[#e0231c]">00:00:00</span>
+              </div>
+              <div class="bg-slate-950 border border-slate-900 p-4 rounded-md text-left">
+                <span class="text-[10px] text-slate-500 uppercase tracking-wider block font-semibold">Verified Iterations</span>
+                <span class="text-2xl font-mono font-bold text-emerald-400">15 / 15</span>
+              </div>
             </div>
-            <span class="text-[10px] text-slate-700">LOCKED</span>
-          `;
-        }
 
-        container.appendChild(item);
-      });
-    }
+            <div class="pt-4 flex justify-center gap-3">
+              <button 
+                onclick="resetHunt()" 
+                class="bg-slate-955 border border-slate-800 hover:border-[#e0231c]/50 text-slate-200 font-mono uppercase tracking-wider px-6 py-2.5 rounded-md text-xs transition-colors"
+              >
+                Reset Progress Data
+              </button>
+            </div>
+          </div>
 
-    function updateProgressBar() {
-      const pct = Math.round((currentIndex / PUZZLES.length) * 100);
-      document.getElementById('progress-bar-fill').style.width = `${pct}%`;
-      document.getElementById('completion-percentage').textContent = `${pct}% Completed`;
-    }
+        </section>
 
-    // ANSWER SUBMISSION HANDLER
-    function handleAnswerSubmit(e) {
-      e.preventDefault();
-      const inputEl = document.getElementById('answer-input');
-      const userAnswer = inputEl.value.trim().toUpperCase();
-      const currentPuzzle = PUZZLES[currentIndex];
+        <!-- RIGHT COLUMN: PROGRESS TRACKING SIDEBAR -->
+        <aside class="lg:col-span-4 space-y-6">
+          
+          <!-- TIME ACCUMULATION & ACTIVE CLOCK -->
+          <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-5 space-y-4">
+            <h3 class="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center justify-between">
+              <span>ACTIVE SYSTEM TIMER</span>
+              <span class="h-2 w-2 rounded-full bg-[#e0231c]"></span>
+            </h3>
 
-      const errBox = document.getElementById('feedback-error');
-      const successBox = document.getElementById('feedback-success');
-
-      if (userAnswer === currentPuzzle.password) {
-        errBox.classList.add('hidden');
-        successBox.classList.remove('hidden');
-
-        splitTimes[currentIndex] = formatTime(questionSeconds);
-
-        setTimeout(() => {
-          if (currentIndex < PUZZLES.length - 1) {
-            currentIndex++;
-            startQuestionTimer();
-            renderPuzzle();
-          } else {
-            finishHunt();
-          }
-        }, 800);
-
-      } else {
-        successBox.classList.add('hidden');
-        errBox.classList.remove('hidden');
-        inputEl.focus();
-        inputEl.select();
-      }
-    }
-
-    // COMPLETION STATE
-    function finishHunt() {
-      clearInterval(questionTimerInterval);
-      clearInterval(totalTimerInterval);
-
-      document.getElementById('puzzle-card').classList.add('hidden');
-      document.getElementById('completion-card').classList.remove('hidden');
-      document.getElementById('final-total-time').textContent = formatTime(totalSeconds);
-      document.getElementById('header-status').textContent = "Hunt Completed";
-      document.getElementById('header-status').previousElementSibling.className = "h-2 w-2 rounded-full bg-emerald-500";
-      
-      currentIndex = PUZZLES.length;
-      updateProgressBar();
-      renderTrackerList();
-    }
-
-    // RESET HUNT
-    function resetHunt() {
-      currentIndex = 0;
-      totalSeconds = 0;
-      questionSeconds = 0;
-      splitTimes = {};
-
-      document.getElementById('completion-card').classList.add('hidden');
-      document.getElementById('puzzle-card').classList.remove('hidden');
-      document.getElementById('header-status').textContent = "Active Session";
-
-      initTimers();
-      renderPuzzle();
-    }
-
-    // MODAL CONTROL
-    function openModal(id) {
-      document.getElementById(id).showModal();
-    }
-    function closeModal(id) {
-      document.getElementById(id).close();
-    }
-
-    // TRIGGER APPLICATION START
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', startApp);
-    } else {
-      startApp();
-    }
-  </script>
-</body>
-</html>
+            <div class="space-y-3">
+              <div class="bg-slate-950 border border-s
